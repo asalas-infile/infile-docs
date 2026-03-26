@@ -1,0 +1,84 @@
+import { Callout } from 'nextra/components'
+
+# Consulta de NIT
+
+Web Service para consultar el **nombre o razón social** asociado a un NIT, para agregarlo a sus Documentos Tributarios Electrónicos previo a la certificación.
+
+## 1. Introducción
+
+Este manual describe el uso del Web Service destinado a la consulta de NIT para agregarlo a sus Documentos Tributarios Electrónicos previo a la certificación. El servicio recibe una petición `POST` con un JSON y retorna la razón social del contribuyente asociado al NIT consultado.
+
+## 2. Requisitos Previos y Restricciones
+
+- Credenciales válidas y activas para consumir el servicio (Usuario API, Llave API).
+- Conocimiento básico en consumo de servicios web (REST).
+- Capacidad de generar el JSON de consulta para consumir el servicio.
+- El NIT a consultar debe ser válido y no debe estar desactivado en la base de datos de la SAT.
+- El servicio **solamente retorna la razón social** del NIT asociado.
+
+<Callout type="warning">
+  Si el NIT no se encuentra en la base de datos de INFILE, solicitar apoyo al equipo de Servicio al Cliente de INFILE para realizar la actualización correspondiente.
+</Callout>
+
+## 3. Endpoint
+
+**Método:** `POST`
+
+```
+https://consultareceptores.feel.com.gt/rest/action
+```
+
+**Content-Type:**
+```
+application/json
+```
+
+## 4. Petición (JSON)
+
+El cuerpo de la petición debe ser un JSON con las credenciales y el NIT a consultar:
+
+| Campo | Descripción |
+|---|---|
+| `Emisor_codigo` | Usuario API |
+| `Emisor_clave` | Llave API |
+| `Nit_consulta` | NIT a consultar |
+
+Ejemplo completo de la petición:
+
+```http
+POST https://consultareceptores.feel.com.gt/rest/action
+Content-Type: application/json
+
+{
+  "Emisor_codigo": "tu_usuario_api",
+  "Emisor_clave": "tu_llave_api",
+  "Nit_consulta": "9876543"
+}
+```
+
+## 5. Respuesta del Servicio
+
+La respuesta es un JSON con la razón social o nombre del contribuyente asociado al NIT consultado.
+
+### Respuesta exitosa
+
+```json
+{
+  "resultado": true,
+  "razon_social": "CLIENTE EJEMPLO SOCIEDAD ANONIMA"
+}
+```
+
+### Respuesta con NIT no encontrado
+
+```json
+{
+  "resultado": false,
+  "razon_social": null,
+  "descripcion": "NIT no encontrado en base de datos."
+}
+```
+
+<Callout type="info">
+  Se recomienda realizar esta consulta **antes de emitir** el DTE para validar que el NIT del receptor es correcto y está activo.
+</Callout>
